@@ -11,8 +11,8 @@ load_dotenv()
 
 
 class RunConfig(BaseModel):
-    host: str = "127.0.0.1"
-    port: int = 8000
+    host: str
+    port: int 
 
 
 class DataBaseConfig(BaseModel): 
@@ -24,7 +24,9 @@ class DataBaseConfig(BaseModel):
 
 
 class RedisConfig(BaseModel):
-    pass
+    host: str
+    port: int
+    db: int
 
 
 class MinioConfig(BaseModel):
@@ -40,8 +42,9 @@ class Settings(BaseSettings):
         env_prefix="BACK_CONFIG__"
     )
 
-    run: RunConfig = RunConfig()
+    run: RunConfig
     db: DataBaseConfig
+    redis: RedisConfig
 
 
 settings = Settings()
