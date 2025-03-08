@@ -1,4 +1,9 @@
-from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.ext.asyncio import (
+    create_async_engine,
+    AsyncEngine,
+    async_sessionmaker,
+    AsyncSession,
+)
 
 class DataBaseHelper:
     def __init__(
@@ -9,11 +14,16 @@ class DataBaseHelper:
             pool_size: int = 5,
             max_overflow: int = 10,
     ):
-
-        self.engine = create_async_engine(
+        self.engine: AsyncEngine = create_async_engine(
             url,
             echo=echo,
             echo_pool=echo_pool,
             pool_size=pool_size,
             max_overflow=max_overflow,
+        )
+        self.session_factory: async_sessionmaker[AsyncSession] = async_sessionmaker(
+            bind=self.engine,
+            autoflush=False,
+            autocommit=False,
+            expire_on_commit=False,
         )
