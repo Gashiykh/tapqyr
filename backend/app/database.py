@@ -27,3 +27,7 @@ class DataBaseHelper:
             autocommit=False,
             expire_on_commit=False,
         )
+
+    async def session_getter(self):
+        async with self.session_factory() as session:
+            yield session
