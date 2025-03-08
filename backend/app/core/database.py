@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     AsyncSession,
 )
-from config import settings
+from app.core.config import settings
 
 
 class DataBaseHelper:
@@ -32,7 +32,7 @@ class DataBaseHelper:
 
     async def dispose(self):
         await self.engine.dispose()
-        
+
     async def session_getter(self):
         async with self.session_factory() as session:
             yield session
