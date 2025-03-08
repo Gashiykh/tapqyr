@@ -1,11 +1,13 @@
 from datetime import datetime
-from sqlalchemy import ForeignKey
+
+from sqlalchemy import Enum
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
 )
 
 from .base import Base
+from ..enums import RoleEnum
 
 
 class User(Base):
@@ -18,5 +20,5 @@ class User(Base):
     tg_username: Mapped[str] = mapped_column(nullable=False, unique=True)
     is_verified: Mapped[bool] = mapped_column(default=False, nullable=False)
 
-    role: Mapped[str] = mapped_column()
+    role: Mapped[RoleEnum] = mapped_column(Enum(RoleEnum), nullable=False)
     date_joined: Mapped[datetime] = mapped_column(default=datetime.utcnow)
