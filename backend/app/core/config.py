@@ -17,10 +17,10 @@ class RunConfig(BaseModel):
 
 class DataBaseConfig(BaseModel): 
     url: PostgresDsn
-    echo: bool = False
-    echo_pool: bool = False
-    pool_size: int = 50
-    max_overflow: int = 10
+    echo: bool
+    echo_pool: bool
+    pool_size: int
+    max_overflow: int
 
 
 class RedisConfig(BaseModel):
