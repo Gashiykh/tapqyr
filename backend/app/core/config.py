@@ -29,8 +29,15 @@ class RedisConfig(BaseModel):
     db: int
 
 
-class MinioConfig(BaseModel):
+class MinIOConfig(BaseModel):
     pass
+
+
+class JWTConfig(BaseModel):
+    secret_key: str
+    algorithm: str
+    access_token_expire_minutes: int
+    refresh_token_expire_days: int
 
 
 class Settings(BaseSettings):
@@ -45,6 +52,7 @@ class Settings(BaseSettings):
     run: RunConfig
     db: DataBaseConfig
     redis: RedisConfig
+    jwt: JWTConfig
 
 
 settings = Settings()
