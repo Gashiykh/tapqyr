@@ -36,6 +36,7 @@ def decode_token(token: str):
         settings.jwt.secret_key,
         algorithms=[settings.jwt.algorithm]
     )
-    username: str = payload.get('sub')
+    user_id = payload('sub')
+    username: str = payload.get('username')
     role: str = payload.get('role')
-    return username, role
+    return user_id, username, role
