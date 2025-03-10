@@ -1,6 +1,13 @@
-from app.domain.schemas import UserCreate
+from app.domain.schemas import (
+    UserCreate,
+    UserLogin
+)
+from app.security import (
+    hash_password,
+    create_access_token,
+    create_refresh_token, verify_password
+)
 from app.repositories import UserRepository
-from app.security import hash_password, create_access_token, create_refresh_token
 
 
 class AuthService:
@@ -30,6 +37,25 @@ class AuthService:
         )
         refresh_token = await create_refresh_token(
             user_id=new_user.id,
+        )
+
+        return access_token, refresh_token
+
+    async def login(self, user_data: UserLogin):
+        user = await self.user_repository.get_user_by_username(user_data.username)
+
+        if not user:
+            raise ValueError("Неверный логин или пароль")
+
+        if not verify_password(user_data.password, user.password):
+            raise ValueError("Неверный логин или пароль")
+
+        access_token = create_access_token(
+            user_id=user.id,
+            role=user.role,
+        )
+        refresh_token = await create_refresh_token(
+            user_id=user.id,
         )
 
         return access_token, refresh_token
