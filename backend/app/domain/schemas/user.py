@@ -4,11 +4,6 @@ from pydantic import BaseModel
 from app.domain.enums import RoleEnum
 
 
-class UserLogin(BaseModel):
-    username: str
-    password: str
-
-
 class UserBase(BaseModel):
     username: str
     tg_username: str
