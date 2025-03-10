@@ -7,7 +7,6 @@ from app.domain.enums import RoleEnum
 class UserBase(BaseModel):
     username: str
     tg_username: str
-    role: RoleEnum = RoleEnum.USER
 
 
 class UserCreate(UserBase):
@@ -17,6 +16,7 @@ class UserCreate(UserBase):
 class UserRead(UserBase):
     id: int
     avatar: str | None = None
+    role: RoleEnum = RoleEnum.USER
     is_verified: bool
     created_at: datetime
     updated_at: datetime
