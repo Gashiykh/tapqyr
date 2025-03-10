@@ -25,12 +25,12 @@ class UserRepository:
         return result.scalar_one_or_none()
 
     async def create_user(self, user: UserCreate):
-        user = User(**user.model_dump())
-        self.session.add(user)
+        new_user = User(**user.model_dump())
+        self.session.add(new_user)
         try:
             await self.session.commit()
-            await self.session.refresh(user)
-            return user
+            await self.session.refresh(new_user)
+            return new_user
         except IntegrityError:
             await self.session.rollback()
             raise ValueError("Ошибка: username или tg_username уже заняты")
