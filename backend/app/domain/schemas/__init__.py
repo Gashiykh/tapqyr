@@ -1,7 +1,8 @@
 from .user import (
     UserBase,
     UserCreate,
-    UserRead
+    UserRead,
+    UserLogin
 )
 
 from .auth import (
