@@ -9,7 +9,7 @@ from fastapi import (
     Cookie
 )
 
-from app.api.dependencies import get_auth_service, set_tokens_in_cookies
+from app.api.dependencies import get_auth_service, set_tokens_in_cookies, delete_tokens_from_cookies
 from app.services import AuthService
 from app.domain.schemas import (
     UserCreate,
@@ -79,3 +79,26 @@ async def refresh(
     return {"detail": "Токены успешно обновлены"}
 
 
+@router.post("/logout")
+async def logout(
+        response: Response,
+        refresh_token: Optional[str] = Cookie(None),
+        auth_service: AuthService = Depends(get_auth_service),
+):
+    if not refresh_token:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Пользователь уже вышел из аккаунта"
+        )
+
+    try:
+        await auth_service.logout(refresh_token)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
+    delete_tokens_from_cookies(response)
+
+    return {"detail": "Вы успешно вышли из аккаунта"}
