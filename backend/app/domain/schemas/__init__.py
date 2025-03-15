@@ -5,6 +5,5 @@ from .user import (
 )
 
 from .auth import (
-    TokenResponse,
     UserLogin
 )
