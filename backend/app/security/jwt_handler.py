@@ -62,15 +62,18 @@ async def verify_refresh_token(refresh_token: str):
             settings.jwt.secret_key,
             algorithms=[settings.jwt.algorithm]
         )
-        user_id: str = payload('sub')
+        user_id: str = payload.get("sub")
 
         redis = await redis_client.get_redis()
         stored_token = await redis.get(f"refresh_token:{user_id}")
 
-        if stored_token is None or stored_token != payload.get('refresh_token'):
+        if stored_token is None:
             return None
 
-        return user_id
+        if stored_token != refresh_token:
+            return None
+
+        return int(user_id)
     except jwt.ExpiredSignatureError:
         return None
     except jwt.InvalidTokenError:
