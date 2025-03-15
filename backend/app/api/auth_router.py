@@ -1,14 +1,15 @@
+from typing import Optional
+
 from fastapi import (
     Depends,
     APIRouter,
     HTTPException,
     status,
-    Response
+    Response,
+    Cookie
 )
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core import db_helper
-from app.repositories import UserRepository
+from app.api.dependencies import get_auth_service, set_tokens_in_cookies
 from app.services import AuthService
 from app.domain.schemas import (
     UserCreate,
@@ -21,11 +22,8 @@ router = APIRouter()
 async def register(
         user_data: UserCreate,
         response: Response,
-        session: AsyncSession = Depends(db_helper.session_getter),
+        auth_service: AuthService = Depends(get_auth_service),
 ):
-    user_repo = UserRepository(session)
-    auth_service = AuthService(user_repo)
-
     try:
         access_token, refresh_token = await auth_service.register_user(user_data)
     except ValueError as e:
@@ -34,21 +32,7 @@ async def register(
             detail=str(e)
         )
 
-    response.set_cookie(
-        key='access_token',
-        value=access_token,
-        httponly=True,
-        secure=False, # для localhost False; в продакшене True (HTTPS)
-        samesite="strict"
-    )
-
-    response.set_cookie(
-        key='refresh_token',
-        value=refresh_token,
-        httponly=True,
-        secure=False, # TODO поменять на True
-        samesite="strict"
-    )
+    set_tokens_in_cookies(response, access_token, refresh_token)
 
     return {"detail": "Пользователь успешно зарегистрирован."}
 
@@ -56,11 +40,8 @@ async def register(
 async def login(
         user_login: UserLogin,
         response: Response,
-        session: AsyncSession = Depends(db_helper.session_getter),
+        auth_service: AuthService = Depends(get_auth_service),
 ):
-    user_repo = UserRepository(session)
-    auth_service = AuthService(user_repo)
-
     try:
         access_token, refresh_token = await auth_service.login(user_login)
     except ValueError as e:
@@ -69,20 +50,32 @@ async def login(
             detail=str(e)
         )
 
-    response.set_cookie(
-        key='access_token',
-        value=access_token,
-        httponly=True,
-        secure=False,  # для localhost False; в продакшене True (HTTPS)
-        samesite="strict"
-    )
-
-    response.set_cookie(
-        key='refresh_token',
-        value=refresh_token,
-        httponly=True,
-        secure=False,  # TODO поменять на True
-        samesite="strict"
-    )
+    set_tokens_in_cookies(response, access_token, refresh_token)
 
     return {"detail": "Пользователь успешно авторизован."}
+
+@router.post("/refresh")
+async def refresh(
+        response: Response,
+        refresh_token: Optional[str] = Cookie(None),
+        auth_service: AuthService = Depends(get_auth_service),
+):
+    if not refresh_token:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Токен не найден"
+        )
+
+    try:
+        access_token, refresh_token = await auth_service.refresh_tokens(refresh_token)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
+    set_tokens_in_cookies(response, access_token, refresh_token)
+
+    return {"detail": "Токены успешно обновлены"}
+
+
