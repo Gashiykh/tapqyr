@@ -9,7 +9,10 @@ from app.security import (
     verify_password
 )
 from app.repositories import UserRepository
-from app.security.jwt_handler import verify_refresh_token, delete_refresh_token
+from app.security.jwt_handler import (
+    verify_refresh_token,
+    delete_refresh_token
+)
 
 
 class AuthService:
@@ -85,3 +88,10 @@ class AuthService:
         refresh_token = await create_refresh_token(user_id)
 
         return access_token, refresh_token
+
+    async def logout(self, refresh_token: str):
+        user_id = await verify_refresh_token(refresh_token)
+        if not user_id:
+            raise ValueError("Невалидный или просроченный refresh-токен")
+        await delete_refresh_token(user_id)
+        return True
