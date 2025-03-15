@@ -5,9 +5,11 @@ from app.domain.schemas import (
 from app.security import (
     hash_password,
     create_access_token,
-    create_refresh_token, verify_password
+    create_refresh_token,
+    verify_password
 )
 from app.repositories import UserRepository
+from app.security.jwt_handler import verify_refresh_token, delete_refresh_token
 
 
 class AuthService:
@@ -57,5 +59,29 @@ class AuthService:
         refresh_token = await create_refresh_token(
             user_id=user.id,
         )
+
+        return access_token, refresh_token
+
+    async def verify_refresh_toke(self, refresh_token: str):
+        user_id = await verify_refresh_token(refresh_token)
+        return user_id
+
+    async def refresh_tokens(self, old_refresh_token: str):
+        user_id = await verify_refresh_token(old_refresh_token)
+        if not user_id:
+            raise ValueError("Невалидный токен")
+
+        user = await self.user_repository.get_user_by_id(user_id)
+        if not user:
+            raise ValueError("Пользователь не найден")
+
+        await delete_refresh_token(user_id)
+
+        access_token = create_access_token(
+            user_id=user_id,
+            role=user.role,
+        )
+
+        refresh_token = await create_refresh_token(user_id)
 
         return access_token, refresh_token
