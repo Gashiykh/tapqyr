@@ -1,3 +1,5 @@
+from http.client import responses
+
 from fastapi import Depends, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -29,6 +31,27 @@ def set_tokens_in_cookies(
         key="refresh_token",
         value=refresh_token,
         httponly=True,
+        samesite="strict",
+        secure=False
+    )
+
+
+def delete_tokens_from_cookies(
+        response: Response,
+):
+    response.set_cookie(
+        key="access_token",
+        value="",
+        httponly=True,
+        max_age=0,
+        samesite="strict",
+        secure=False  # На продакшене: True (HTTPS)
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value="",
+        httponly=True,
+        max_age=0,
         samesite="strict",
         secure=False
     )
