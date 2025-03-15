@@ -62,7 +62,7 @@ class AuthService:
 
         return access_token, refresh_token
 
-    async def verify_refresh_toke(self, refresh_token: str):
+    async def verify_refresh_token(self, refresh_token: str):
         user_id = await verify_refresh_token(refresh_token)
         return user_id
 
