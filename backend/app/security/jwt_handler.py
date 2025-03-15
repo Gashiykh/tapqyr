@@ -7,20 +7,21 @@ from app.domain.enums import RoleEnum
 
 
 def create_access_token(user_id: int, role: RoleEnum):
+    print("DEBUG: SECRET_KEY при генерации =", settings.jwt.secret_key)
     to_encode = {
-        "sub": user_id,
+        "sub": str(user_id),
         "role": role.value,
     }
     expire = datetime.utcnow() + timedelta(
         minutes=settings.jwt.access_token_expire_minutes
     )
     to_encode["exp"] = expire
-    return jwt.encode(
+    access_token = jwt.encode(
         to_encode,
         settings.jwt.secret_key,
         algorithm=settings.jwt.algorithm
     )
-
+    return access_token
 
 async def create_refresh_token(user_id: int):
     to_encode = {
@@ -49,10 +50,9 @@ def decode_token(token: str):
         settings.jwt.secret_key,
         algorithms=[settings.jwt.algorithm]
     )
-    user_id = payload('sub')
-    username: str = payload.get('username')
+    user_id = payload.get('sub')
     role: str = payload.get('role')
-    return user_id, username, role
+    return int(user_id), role
 
 
 async def verify_refresh_token(refresh_token: str):
