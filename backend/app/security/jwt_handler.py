@@ -27,7 +27,7 @@ async def create_refresh_token(user_id: int):
         "sub": str(user_id),
     }
     expire = datetime.utcnow() + timedelta(
-        minutes=settings.jwt.refresh_token_expire_days
+        days=settings.jwt.refresh_token_expire_days
     )
     to_encode["exp"] = expire
 
