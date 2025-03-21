@@ -6,11 +6,10 @@ from fastapi import (
     HTTPException,
     status
 )
-from jwt import decode
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing_extensions import Optional
 
-from app.core import db_helper, settings
+from app.core import db_helper
 from app.repositories import UserRepository
 from app.security import decode_token
 from app.services import AuthService
@@ -77,9 +76,15 @@ async def get_current_user(
     try:
         user_id, role = decode_token(access_token)
     except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Токен просрочен")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Токен просрочен"
+        )
     except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Невалидный токен")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Невалидный токен"
+        )
 
     user_repo = UserRepository(session)
     user = await user_repo.get_user_by_id(user_id)
