@@ -7,6 +7,7 @@ from fastapi.responses import ORJSONResponse
 from app.core import settings, db_helper
 from app.api import auth_router
 from app.api import user_router
+from app.middleware import setup_cors
 
 
 @asynccontextmanager
@@ -20,6 +21,8 @@ main_app = FastAPI(
     default_response_class=ORJSONResponse,
     lifespan=lifespan,
 )
+
+setup_cors(main_app)
 
 main_app.include_router(
     auth_router,
