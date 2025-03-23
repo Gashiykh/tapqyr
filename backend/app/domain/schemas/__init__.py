@@ -7,3 +7,7 @@ from .user import (
 from .auth import (
     UserLogin
 )
+
+from .category import (
+    CategoryCreate
+)
