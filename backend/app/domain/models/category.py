@@ -1,3 +1,4 @@
+from typing import TYPE_CHECKING
 from sqlalchemy import String
 from sqlalchemy.orm import (
     Mapped,
@@ -5,7 +6,8 @@ from sqlalchemy.orm import (
 )
 
 from .base import Base
-from .post import Post
+if TYPE_CHECKING:
+    from .post import Post
 
 
 class Category(Base):

@@ -1,3 +1,4 @@
+from typing import TYPE_CHECKING
 from sqlalchemy import Enum, Integer
 from sqlalchemy.orm import (
     Mapped,
@@ -7,7 +8,8 @@ from sqlalchemy.orm import (
 from ..enums import BuildingsEnum
 
 from .base import Base
-from .post import Post
+if TYPE_CHECKING:
+    from .post import Post
 
 
 class Location(Base):

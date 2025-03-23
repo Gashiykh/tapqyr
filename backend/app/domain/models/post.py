@@ -1,3 +1,4 @@
+from typing import TYPE_CHECKING
 from datetime import datetime
 from sqlalchemy import (
     ForeignKey,
@@ -11,11 +12,11 @@ from sqlalchemy.orm import (
     mapped_column, relationship
 )
 
-from app.domain.models import Category
 from ..enums import StatusPostEnum
-
 from .base import Base
-from .comment import Comment
+if TYPE_CHECKING:
+    from .category import Category
+    from .comment import Comment
 
 
 

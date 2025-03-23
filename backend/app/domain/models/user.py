@@ -1,3 +1,4 @@
+from typing import TYPE_CHECKING
 from datetime import datetime
 from sqlalchemy import (
     Enum,
@@ -10,11 +11,10 @@ from sqlalchemy.orm import (
 )
 
 from ..enums import RoleEnum
-
 from .base import Base
-#TODO typing
-from .comment import Comment
-from .post import Post
+if TYPE_CHECKING:
+    from .comment import Comment
+    from .post import Post
 
 
 class User(Base):
@@ -35,7 +35,7 @@ class User(Base):
     #Обратные связи
     posts: Mapped[list["Post"]] = relationship(
         "Post",
-        back_populates="user",
+        back_populates="author",
         cascade="all, delete-orphan",
     )
 
