@@ -7,7 +7,6 @@ from app.domain.enums import RoleEnum
 
 
 def create_access_token(user_id: int, role: RoleEnum):
-    print("DEBUG: SECRET_KEY при генерации =", settings.jwt.secret_key)
     to_encode = {
         "sub": str(user_id),
         "role": role.value,

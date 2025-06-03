@@ -6,3 +6,4 @@ class LocationRepository:
         self.session = session
 
     async def get_location_by_building(self):
+        pass
